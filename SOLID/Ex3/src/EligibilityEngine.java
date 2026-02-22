@@ -24,11 +24,13 @@ public class EligibilityEngine {
         List<String> reasons = new ArrayList<>();
         String status = "ELIGIBLE";
 
+        // Stop at first failure, matching original else-if chain behavior
         for (EligibilityRule rule : rules) {
             RuleResult result = rule.evaluate(s);
             if (!result.isEligible) {
                 status = "NOT_ELIGIBLE";
                 reasons.add(result.reason);
+                break; // Stop at first failure, like original else-if chain
             }
         }
 

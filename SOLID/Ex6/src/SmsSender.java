@@ -3,8 +3,10 @@ public class SmsSender extends NotificationSender {
 
     @Override
     public void send(Notification n) {
-        // Ignores subject; base type doesn't clarify expectations (smell)
-        System.out.println("SMS -> to=" + n.phone + " body=" + n.body);
+        // Honor base contract: handle nulls gracefully, preserve content
+        String phone = n.phone == null ? "" : n.phone;
+        String body = n.body == null ? "" : n.body;
+        System.out.println("SMS -> to=" + phone + " body=" + body);
         audit.add("sms sent");
     }
 }

@@ -1,18 +1,31 @@
 public class EvaluationPipeline {
-    // DIP violation: high-level module constructs concretes directly
-    public void evaluate(Submission sub) {
-        Rubric rubric = new Rubric();
-        PlagiarismChecker pc = new PlagiarismChecker();
-        CodeGrader grader = new CodeGrader();
-        ReportWriter writer = new ReportWriter();
+    private final Rubric rubric;
+    private final PlagiarismScorer plagiarismScorer;
+    private final SubmissionGrader submissionGrader;
+    private final EvaluationReportWriter reportWriter;
 
-        int plag = pc.check(sub);
+    public EvaluationPipeline() {
+        this(new Rubric(), new PlagiarismChecker(), new CodeGrader(), new ReportWriter());
+    }
+
+    public EvaluationPipeline(Rubric rubric,
+                              PlagiarismScorer plagiarismScorer,
+                              SubmissionGrader submissionGrader,
+                              EvaluationReportWriter reportWriter) {
+        this.rubric = rubric;
+        this.plagiarismScorer = plagiarismScorer;
+        this.submissionGrader = submissionGrader;
+        this.reportWriter = reportWriter;
+    }
+
+    public void evaluate(Submission sub) {
+        int plag = plagiarismScorer.check(sub);
         System.out.println("PlagiarismScore=" + plag);
 
-        int code = grader.grade(sub, rubric);
+        int code = submissionGrader.grade(sub, rubric);
         System.out.println("CodeScore=" + code);
 
-        String reportName = writer.write(sub, plag, code);
+        String reportName = reportWriter.write(sub, plag, code);
         System.out.println("Report written: " + reportName);
 
         int total = plag + code;
